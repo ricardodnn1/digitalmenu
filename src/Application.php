@@ -111,7 +111,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     {
         $service = new AuthenticationService();
 
-        // Define where users should be redirected to when they are not authenticated
+        // Para onde redirecionar quando não estiver logado
         $service->setConfig([
             'unauthenticatedRedirect' => Router::url([
                 'prefix' => 'Admin',
@@ -121,22 +121,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'queryParam' => 'redirect',
         ]);
 
-        // Load identifiers
-        $service->loadIdentifier('Authentication.Password', [
-            'fields' => [
-                'username' => 'username',
-                'password' => 'password',
-            ],
-            'resolver' => [
-                'className' => 'Authentication.Orm',
-                'userModel' => 'AdminUsers',
-            ],
-        ]);
-
-        // Load the authenticators, session first
+        // Autenticação por sessão
         $service->loadAuthenticator('Authentication.Session');
-        
-        // Form authenticator for login form
+
+        // Autenticação via formulário (login)
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => [
                 'username' => 'username',
@@ -147,6 +135,18 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'controller' => 'Auth',
                 'action' => 'login',
             ]),
+            'identifier' => [
+                'Authentication.Password' => [
+                    'fields' => [
+                        'username' => 'username',
+                        'password' => 'password',
+                    ],
+                    'resolver' => [
+                        'className' => 'Authentication.Orm',
+                        'userModel' => 'AdminUsers',
+                    ],
+                ],
+            ],
         ]);
 
         return $service;
